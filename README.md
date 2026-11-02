@@ -47,18 +47,18 @@ Simulator	                    Questa / ModelSim
 The design has three clock domains: PCIe core, AXI fabric, and DDR controller. Crossings use asynchronous FIFOs and synchronizers. Clock and reset details are in
 
 ## Features
-PCIe endpoint: memory read and write TLPs, completions, credit-based flow control, and ACK/NAK replay
-AXI4 crossbar: multi-master arbitration, burst support, and clock-domain crossing
-DDR4 controller: power-up and mode register initialization, per-bank state machines, command scheduling with an open-page policy, and auto-refresh
-DMA engine: descriptor-driven transfers across the fabric
-UVM environment: PCIe, AXI4, and DDR4 agents, a reference memory model, an end-to-end scoreboard, and protocol SVA
-Coverage: functional covergroups for TLP types, burst lengths, credit states, bank conflicts, and refresh collisions
+* PCIe endpoint: memory read and write TLPs, completions, credit-based flow control, and ACK/NAK replay
+* AXI4 crossbar: multi-master arbitration, burst support, and clock-domain crossing
+* DDR4 controller: power-up and mode register initialization, per-bank state machines, command scheduling with an open-page policy, and auto-refresh
+* DMA engine: descriptor-driven transfers across the fabric
+* UVM environment: PCIe, AXI4, and DDR4 agents, a reference memory model, an end-to-end scoreboard, and protocol SVA
+* Coverage: functional covergroups for TLP types, burst lengths, credit states, bank conflicts, and refresh collisions
 
 ## Verification Environment
 
-Agents: PCIe, AXI4, and DDR4 agents, each with a driver, monitor, sequencer, and configuration object. Agents are active or passive per interface.
-Virtual sequencer: coordinates sequences across agents for end-to-end scenarios.
-Reference model: a byte-addressable memory model that predicts the data each read should return.
-Scoreboard: compares DUT outputs against the reference model at the PCIe completion and DDR4 command levels.
-SVA: protocol checks bound into the DUT with bind. These cover AXI4 handshakes and DDR4 timing parameters (tRCD, tRP, tRAS, tRRD, tFAW, tREFI, tRFC).
-Coverage: functional covergroups with cross-coverage of read/write mix against bank activity.
+* Agents: PCIe, AXI4, and DDR4 agents, each with a driver, monitor, sequencer, and configuration object. Agents are active or passive per interface.
+* Virtual sequencer: coordinates sequences across agents for end-to-end scenarios.
+* Reference model: a byte-addressable memory model that predicts the data each read should return.
+* Scoreboard: compares DUT outputs against the reference model at the PCIe completion and DDR4 command levels.
+* SVA: protocol checks bound into the DUT with bind. These cover AXI4 handshakes and DDR4 timing parameters (tRCD, tRP, tRAS, tRRD, tFAW, tREFI, tRFC).
+* Coverage: functional covergroups with cross-coverage of read/write mix against bank activity.
