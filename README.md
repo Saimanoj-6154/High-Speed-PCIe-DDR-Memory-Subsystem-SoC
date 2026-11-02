@@ -17,3 +17,31 @@ HDL	                          SystemVerilog (IEEE 1800)
 Verification	                UVM 1.2
 Simulator	                    Questa / ModelSim
 ```
+## Architecture
+
+```
+   Host (PCIe root complex model)          DMA engine
+              |                                |
+              v                                |
+     +------------------+                      |
+     | PCIe Endpoint    |                      |
+     | TL / DLL / FC    |                      |
+     +--------+---------+                      |
+              | AXI4 master                    | AXI4 master
+              v                                v
+     +---------------------------------------------+
+     |              AXI4 Crossbar                  |
+     |     routing, arbitration, clock crossing    |
+     +----------------------+----------------------+
+                            | AXI4 slave
+                            v
+     +---------------------------------------------+
+     |            DDR4 Memory Controller           |
+     |  bank FSMs, command scheduler, refresh      |
+     +----------------------+----------------------+
+                            | DFI-style PHY interface
+                            v
+                  DDR4 PHY / DRAM model
+
+```
+
