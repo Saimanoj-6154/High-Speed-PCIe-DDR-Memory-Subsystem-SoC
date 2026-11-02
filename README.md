@@ -62,3 +62,89 @@ The design has three clock domains: PCIe core, AXI fabric, and DDR controller. C
 * Scoreboard: compares DUT outputs against the reference model at the PCIe completion and DDR4 command levels.
 * SVA: protocol checks bound into the DUT with bind. These cover AXI4 handshakes and DDR4 timing parameters (tRCD, tRP, tRAS, tRRD, tFAW, tREFI, tRFC).
 * Coverage: functional covergroups with cross-coverage of read/write mix against bank activity.
+
+## Repository Structure
+
+```
+pcie-ddr-soc/
+├── README.md
+├── docs/
+│   ├── architecture.md          # block diagram, clock and reset domains, address map
+│   ├── verification_plan.md     # features mapped to tests, checks, and coverage bins
+│   └── images/                  # diagrams and waveform screenshots
+├── rtl/
+│   ├── top/
+│   │   └── soc_top.sv           # top-level integration and parameters
+│   ├── pcie/
+│   │   ├── pcie_ep_top.sv       # endpoint wrapper
+│   │   ├── pcie_tl.sv           # transaction layer: TLP decode and generate
+│   │   ├── pcie_dll.sv          # data link layer: sequence numbers, ACK/NAK, replay
+│   │   ├── pcie_fc.sv           # credit-based flow control
+│   │   └── pcie_phy_if.sv       # PHY-facing interface adapter
+│   ├── interconnect/
+│   │   └── axi_xbar.sv          # AXI4 crossbar with arbitration and clock crossing
+│   ├── dma/
+│   │   └── dma_engine.sv        # descriptor-driven transfer engine
+│   ├── ddr/
+│   │   ├── ddr_ctrl_top.sv      # controller top
+│   │   ├── ddr_init.sv          # power-up and mode register sequence
+│   │   ├── ddr_bank_fsm.sv      # per-bank state machine
+│   │   ├── ddr_cmd_sched.sv     # command scheduler (open-page policy)
+│   │   ├── ddr_refresh.sv       # auto-refresh (tREFI / tRFC)
+│   │   └── ddr_phy_if.sv        # DFI-style PHY interface
+│   └── common/
+│       ├── fifo_sync.sv
+│       ├── fifo_async.sv
+│       └── sync_ff.sv           # 2-flop synchronizer
+├── dv/
+│   ├── Makefile
+│   ├── tb/
+│   │   ├── tb_top.sv            # clocks, resets, DUT and interface instances
+│   │   └── interfaces/          # pcie_if.sv, axi4_if.sv, ddr4_if.sv
+│   ├── env/
+│   │   ├── soc_env.sv
+│   │   ├── soc_virtual_seqr.sv
+│   │   ├── soc_ref_model.sv     # byte-addressable reference memory
+│   │   ├── soc_scoreboard.sv
+│   │   └── soc_coverage.sv
+│   ├── agents/
+│   │   ├── pcie_agent/          # driver, monitor, sequencer, config, seq_item
+│   │   ├── axi4_agent/
+│   │   └── ddr4_agent/
+│   ├── sva/
+│   │   ├── axi4_assert.sv
+│   │   ├── ddr4_timing_assert.sv
+│   │   └── pcie_assert.sv
+│   ├── seq/
+│   │   ├── base_seq.sv
+│   │   ├── pcie_mem_seq.sv
+│   │   ├── ddr_traffic_seq.sv
+│   │   └── dma_seq.sv
+│   ├── tests/
+│   │   ├── base_test.sv
+│   │   ├── pcie_link_up_test.sv
+│   │   ├── mem_rd_wr_test.sv
+│   │   ├── fc_stress_test.sv
+│   │   ├── dll_replay_test.sv
+│   │   ├── ddr_init_test.sv
+│   │   ├── ddr_refresh_test.sv
+│   │   ├── ddr_timing_test.sv
+│   │   ├── axi_burst_test.sv
+│   │   ├── dma_stress_test.sv
+│   │   ├── cdc_stress_test.sv
+│   │   └── e2e_integrity_test.sv
+│   └── regress/
+│       └── smoke.list
+├── models/
+│   └── README.md                # where to place the DDR4 device model
+├── scripts/
+│   └── cov_merge.tcl
+└── reports/                     # generated coverage reports (gitignored)
+
+```
+
+## References
+* PCI-SIG, PCI Express Base Specification
+* JEDEC, JESD79-4: DDR4 SDRAM Standard
+* Arm, AMBA AXI and ACE Protocol Specification (IHI0022)
+* Accellera, UVM 1.2 Class Reference
